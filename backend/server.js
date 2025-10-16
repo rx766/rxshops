@@ -39,7 +39,9 @@ app.get('/health', (req, res) => {
 
 // API routes
 const authRoutes = require('./routes/auth');
+const adminRoutes = require('./routes/admin');
 app.use(`/api/${process.env.API_VERSION || 'v1'}/auth`, authRoutes);
+app.use(`/api/${process.env.API_VERSION || 'v1'}/admin`, adminRoutes);
 
 // 404 handler
 app.all('*', (req, res) => {

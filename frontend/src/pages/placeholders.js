@@ -36,6 +36,7 @@ import { selectCartItems, selectCartTotal, clearCart } from '../store/slices/car
 import { selectFilteredProducts } from '../store/slices/productSlice';
 import { loginSuccess } from '../store/slices/authSlice';
 import toast from 'react-hot-toast';
+import { formatINRSimple } from '../utils/currency';
 
 // Checkout Page
 export const Checkout = () => {
@@ -68,15 +69,15 @@ export const Checkout = () => {
               {cartItems.map((item, index) => (
                 <Box key={index} display="flex" justifyContent="space-between" mb={1}>
                   <Typography>{item.product.name} x {item.quantity}</Typography>
-                  <Typography>${(item.price * item.quantity).toFixed(2)}</Typography>
+                    <Typography>{formatINRSimple(item.price * item.quantity)}</Typography>
                 </Box>
               ))}
               <Divider sx={{ my: 2 }} />
               <Box display="flex" justifyContent="space-between">
                 <Typography variant="h6">Total</Typography>
-                <Typography variant="h6" color="primary.main">
-                  ${cartTotal.toFixed(2)}
-                </Typography>
+                  <Typography variant="h6" color="primary.main">
+                    {formatINRSimple(cartTotal)}
+                  </Typography>
               </Box>
             </Paper>
           </Grid>
@@ -314,17 +315,17 @@ export const UserOrders = () => {
       orderNumber: 'RX1234567',
       createdAt: '2024-10-15T10:30:00Z',
       status: 'delivered',
-      totalAmount: 329.98,
+      totalAmount: 27399,
       items: [
         {
           product: { _id: '1', name: 'Sony WH-1000XM4 Wireless Headphones', images: [{ url: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100&h=100&fit=crop' }] },
           quantity: 1,
-          price: 299.99
+          price: 24999
         },
         {
           product: { _id: '2', name: 'Premium Cotton T-Shirt', images: [{ url: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=100&h=100&fit=crop' }] },
           quantity: 1,
-          price: 24.99
+          price: 2099
         }
       ],
       shippingAddress: {
@@ -339,12 +340,12 @@ export const UserOrders = () => {
       orderNumber: 'RX1234568',
       createdAt: '2024-10-10T14:20:00Z',
       status: 'shipped',
-      totalAmount: 109.99,
+      totalAmount: 9199,
       items: [
         {
           product: { _id: '4', name: 'Nike Air Zoom Pegasus 40', images: [{ url: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100&h=100&fit=crop' }] },
           quantity: 1,
-          price: 109.99
+          price: 9199
         }
       ],
       shippingAddress: {
@@ -359,12 +360,12 @@ export const UserOrders = () => {
       orderNumber: 'RX1234569',
       createdAt: '2024-10-05T16:45:00Z',
       status: 'processing',
-      totalAmount: 999.99,
+      totalAmount: 82999,
       items: [
         {
           product: { _id: '5', name: 'MacBook Air M2 Laptop', images: [{ url: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=100&h=100&fit=crop' }] },
           quantity: 1,
-          price: 999.99
+          price: 82999
         }
       ],
       shippingAddress: {
@@ -437,7 +438,7 @@ export const UserOrders = () => {
                                 {item.product.name}
                               </Typography>
                               <Typography variant="body2" color="text.secondary">
-                                Quantity: {item.quantity} × ${item.price.toFixed(2)}
+                                Quantity: {item.quantity} × {formatINRSimple(item.price)}
                               </Typography>
                             </Box>
                           </Box>
@@ -460,7 +461,7 @@ export const UserOrders = () => {
                           Order Total
                         </Typography>
                         <Typography variant="h5" color="primary.main" fontWeight="bold">
-                          ${order.totalAmount.toFixed(2)}
+                          {formatINRSimple(order.totalAmount)}
                         </Typography>
                         
                         <Box mt={2} display="flex" flexDirection="column" gap={1}>
@@ -531,7 +532,7 @@ export const AdminDashboard = () => {
   const stats = {
     totalProducts: products.length,
     totalOrders: 127,
-    totalRevenue: 45680.50,
+    totalRevenue: 3789540,
     totalUsers: 892,
     lowStockProducts: products.filter(p => p.stock <= 10).length
   };
@@ -585,13 +586,13 @@ export const AdminDashboard = () => {
             <Card>
               <CardContent>
                 <Box display="flex" alignItems="center">
-                  <Typography variant="h3" color="success.main" sx={{ mr: 2 }}>$</Typography>
+                  <Typography variant="h3" color="success.main" sx={{ mr: 2 }}>₹</Typography>
                   <Box>
                     <Typography color="textSecondary" gutterBottom>
                       Total Revenue
                     </Typography>
                     <Typography variant="h4">
-                      {stats.totalRevenue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                      {stats.totalRevenue.toLocaleString('en-IN')}
                     </Typography>
                   </Box>
                 </Box>
@@ -701,7 +702,7 @@ export const AdminDashboard = () => {
               <TableBody>
                 <TableRow>
                   <TableCell>New Order</TableCell>
-                  <TableCell>Order #RX789 - $299.99</TableCell>
+                  <TableCell>Order #RX789 - {formatINRSimple(24999)}</TableCell>
                   <TableCell>2 minutes ago</TableCell>
                 </TableRow>
                 <TableRow>

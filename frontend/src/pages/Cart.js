@@ -39,6 +39,7 @@ import {
   clearCart,
 } from '../store/slices/cartSlice';
 import toast from 'react-hot-toast';
+import { formatINRSimple } from '../utils/currency';
 
 const Cart = () => {
   const theme = useTheme();
@@ -73,8 +74,8 @@ const Cart = () => {
     navigate('/checkout');
   };
   
-  const shippingCost = cartTotal > 50 ? 0 : 10;
-  const tax = cartTotal * 0.08; // 8% tax
+  const shippingCost = cartTotal > 5000 ? 0 : 100; // Free shipping above ₹5000
+  const tax = cartTotal * 0.18; // 18% GST
   const finalTotal = cartTotal + shippingCost + tax;
   
   if (cartItems.length === 0) {
@@ -138,7 +139,7 @@ const Cart = () => {
       </TableCell>
       <TableCell align="center">
         <Typography variant="h6" color="primary.main">
-          ${item.price.toFixed(2)}
+          {formatINRSimple(item.price)}
         </Typography>
       </TableCell>
       <TableCell align="center">
@@ -171,7 +172,7 @@ const Cart = () => {
       </TableCell>
       <TableCell align="center">
         <Typography variant="h6">
-          ${(item.price * item.quantity).toFixed(2)}
+          {formatINRSimple(item.price * item.quantity)}
         </Typography>
       </TableCell>
       <TableCell align="center">
@@ -219,7 +220,7 @@ const Cart = () => {
               
               <Box display="flex" justifyContent="space-between" alignItems="center" mt={2}>
                 <Typography variant="h6" color="primary.main">
-                  ${item.price.toFixed(2)}
+                  {formatINRSimple(item.price)}
                 </Typography>
                 
                 <Box display="flex" alignItems="center" gap={1}>
@@ -241,7 +242,7 @@ const Cart = () => {
                 </Box>
                 
                 <Typography variant="h6">
-                  ${(item.price * item.quantity).toFixed(2)}
+                  {formatINRSimple(item.price * item.quantity)}
                 </Typography>
                 
                 <IconButton
@@ -333,19 +334,19 @@ const Cart = () => {
               <Box>
                 <Box display="flex" justifyContent="space-between" mb={1}>
                   <Typography>Subtotal ({totalQuantity} items)</Typography>
-                  <Typography>${cartTotal.toFixed(2)}</Typography>
+                  <Typography>{formatINRSimple(cartTotal)}</Typography>
                 </Box>
                 
                 <Box display="flex" justifyContent="space-between" mb={1}>
                   <Typography>Shipping</Typography>
                   <Typography color={shippingCost === 0 ? 'success.main' : 'inherit'}>
-                    {shippingCost === 0 ? 'FREE' : `$${shippingCost.toFixed(2)}`}
+                    {shippingCost === 0 ? 'FREE' : formatINRSimple(shippingCost)}
                   </Typography>
                 </Box>
                 
                 <Box display="flex" justifyContent="space-between" mb={1}>
-                  <Typography>Tax</Typography>
-                  <Typography>${tax.toFixed(2)}</Typography>
+                  <Typography>Tax (GST 18%)</Typography>
+                  <Typography>{formatINRSimple(tax)}</Typography>
                 </Box>
                 
                 <Divider sx={{ my: 2 }} />
@@ -353,13 +354,13 @@ const Cart = () => {
                 <Box display="flex" justifyContent="space-between" mb={3}>
                   <Typography variant="h6">Total</Typography>
                   <Typography variant="h6" color="primary.main">
-                    ${finalTotal.toFixed(2)}
+                    {formatINRSimple(finalTotal)}
                   </Typography>
                 </Box>
                 
-                {cartTotal < 50 && (
+                {cartTotal < 5000 && (
                   <Typography variant="body2" color="text.secondary" mb={2}>
-                    Add ${(50 - cartTotal).toFixed(2)} more for free shipping!
+                    Add {formatINRSimple(5000 - cartTotal)} more for free shipping!
                   </Typography>
                 )}
                 

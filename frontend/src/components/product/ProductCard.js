@@ -20,19 +20,12 @@ import {
 } from '@mui/icons-material';
 import { addToCart } from '../../store/slices/cartSlice';
 import toast from 'react-hot-toast';
+import { formatINRSimple } from '../../utils/currency';
 
 const ProductCard = ({ product, isFavorite = false, onToggleFavorite }) => {
   const dispatch = useDispatch();
 
   const handleAddToCart = () => {
-    // Debug info for localhost vs network issue
-    console.log('🛒 Add to cart clicked:', {
-      host: window.location.hostname,
-      port: window.location.port,
-      product: product.name,
-      redux: !!dispatch
-    });
-    
     const cartItem = {
       product,
       quantity: 1,
@@ -42,10 +35,9 @@ const ProductCard = ({ product, isFavorite = false, onToggleFavorite }) => {
     
     try {
       dispatch(addToCart(cartItem));
-      console.log('✅ Cart item dispatched successfully');
       toast.success(`${product.name} added to cart!`);
     } catch (error) {
-      console.error('❌ Error adding to cart:', error);
+      console.error('Error adding to cart:', error);
       toast.error('Failed to add item to cart');
     }
   };
@@ -150,19 +142,19 @@ const ProductCard = ({ product, isFavorite = false, onToggleFavorite }) => {
           {product.discountPrice ? (
             <>
               <Typography variant="h6" color="primary.main" fontWeight="bold">
-                ${product.discountPrice.toFixed(2)}
+                {formatINRSimple(product.discountPrice)}
               </Typography>
               <Typography
                 variant="body2"
                 color="text.secondary"
                 sx={{ textDecoration: 'line-through' }}
               >
-                ${product.price.toFixed(2)}
+                {formatINRSimple(product.price)}
               </Typography>
             </>
           ) : (
             <Typography variant="h6" color="primary.main" fontWeight="bold">
-              ${product.price.toFixed(2)}
+              {formatINRSimple(product.price)}
             </Typography>
           )}
         </Box>

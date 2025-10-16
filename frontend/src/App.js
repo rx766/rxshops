@@ -26,11 +26,13 @@ import {
   UserOrders,
   Login,
   Register,
-  AdminDashboard,
   AdminProducts,
   AdminOrders,
   AdminUsers
 } from './pages/placeholders';
+
+// Import the new comprehensive AdminDashboard
+import AdminDashboard from './pages/admin/AdminDashboard';
 
 function App() {
   return (
