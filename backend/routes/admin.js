@@ -1,50 +1,123 @@
 const express = require('express');
 const router = express.Router();
-
-// Simple in-memory stores for demo (replace with DB in production)
-const users = [
-  { _id: 'u1', name: 'Admin User', email: 'admin@example.com', role: 'admin', createdAt: new Date().toISOString() },
-  { _id: 'u2', name: 'Rahul Sharma', email: 'rahul@example.com', role: 'user', createdAt: new Date(Date.now() - 86400000).toISOString() },
-  { _id: 'u3', name: 'Priya Verma', email: 'priya@example.com', role: 'user', createdAt: new Date(Date.now() - 2*86400000).toISOString() }
-];
-
-const orders = [
-  { _id: 'o1', userId: 'u2', total: 28999, currency: 'INR', status: 'Processing', items: 1, placedAt: new Date(Date.now() - 3600000).toISOString() },
-  { _id: 'o2', userId: 'u3', total: 12499, currency: 'INR', status: 'Shipped', items: 2, placedAt: new Date(Date.now() - 3*3600000).toISOString() }
-];
+const dataManager = require('../services/dataManager');
 
 // Stats endpoint
-router.get('/stats', (req, res) => {
-  const totalUsers = users.length;
-  const totalOrders = orders.length;
-  const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
-  const lowStock = 5; // placeholder
-  res.json({ totalUsers, totalOrders, totalRevenue, lowStock });
+router.get('/stats', async (req, res) => {
+  try {
+    const stats = await dataManager.getStats();
+    res.json(stats);
+  } catch (error) {
+    console.error('Error getting stats:', error);
+    res.status(500).json({ message: 'Failed to get stats' });
+  }
 });
 
 // Users list
-router.get('/users', (req, res) => {
-  res.json(users);
+router.get('/users', async (req, res) => {
+  try {
+    const users = await dataManager.getUsers();
+    res.json(users);
+  } catch (error) {
+    console.error('Error getting users:', error);
+    res.status(500).json({ message: 'Failed to get users' });
+  }
 });
 
 // Orders list
-router.get('/orders', (req, res) => {
-  // Include user info
-  const enriched = orders.map(o => ({
-    ...o,
-    user: users.find(u => u._id === o.userId) || null,
-  }));
-  res.json(enriched);
+router.get('/orders', async (req, res) => {
+  try {
+    const orders = await dataManager.getOrders();
+    res.json(orders);
+  } catch (error) {
+    console.error('Error getting orders:', error);
+    res.status(500).json({ message: 'Failed to get orders' });
+  }
 });
 
 // Update order status
-router.patch('/orders/:id/status', (req, res) => {
-  const { id } = req.params;
-  const { status } = req.body;
-  const idx = orders.findIndex(o => o._id === id);
-  if (idx === -1) return res.status(404).json({ message: 'Order not found' });
-  orders[idx].status = status || orders[idx].status;
-  res.json(orders[idx]);
+router.patch('/orders/:id/status', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    
+    const updatedOrder = await dataManager.updateOrderStatus(id, status);
+    if (!updatedOrder) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+    
+    res.json(updatedOrder);
+  } catch (error) {
+    console.error('Error updating order status:', error);
+    res.status(500).json({ message: 'Failed to update order status' });
+  }
+});
+
+// Add new user
+router.post('/users', async (req, res) => {
+  try {
+    const newUser = await dataManager.addUser(req.body);
+    res.status(201).json(newUser);
+  } catch (error) {
+    console.error('Error adding user:', error);
+    res.status(500).json({ message: 'Failed to add user' });
+  }
+});
+
+// Update user
+router.patch('/users/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedUser = await dataManager.updateUser(id, req.body);
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json(updatedUser);
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(500).json({ message: 'Failed to update user' });
+  }
+});
+
+// Delete user
+router.delete('/users/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleted = await dataManager.deleteUser(id);
+    if (!deleted) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({ message: 'Failed to delete user' });
+  }
+});
+
+// Add new order
+router.post('/orders', async (req, res) => {
+  try {
+    const newOrder = await dataManager.addOrder(req.body);
+    res.status(201).json(newOrder);
+  } catch (error) {
+    console.error('Error adding order:', error);
+    res.status(500).json({ message: 'Failed to add order' });
+  }
+});
+
+// Backup data
+router.post('/backup', async (req, res) => {
+  try {
+    const success = await dataManager.backupData();
+    if (success) {
+      res.json({ message: 'Data backup created successfully' });
+    } else {
+      res.status(500).json({ message: 'Failed to create backup' });
+    }
+  } catch (error) {
+    console.error('Error creating backup:', error);
+    res.status(500).json({ message: 'Failed to create backup' });
+  }
 });
 
 module.exports = router;
