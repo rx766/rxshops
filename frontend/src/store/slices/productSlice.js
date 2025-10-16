@@ -307,7 +307,7 @@ const initialState = {
   error: null,
   filters: {
     category: '',
-    priceRange: [0, 1000],
+    priceRange: [0, 100000],
     rating: 0,
     searchTerm: '',
   },
@@ -395,7 +395,6 @@ const productSlice = createSlice({
       state.filters = {
         category: '',
         priceRange: [0, 100000],
-,
         rating: 0,
         searchTerm: '',
       };
